@@ -1,5 +1,7 @@
+
 import React from "react";
 import { useWaste } from "../context/WasteContext";
+import { FaFlask, FaSyringe, FaTrashAlt, FaBiohazard, FaCheckCircle, FaHourglassHalf, FaSyncAlt } from "react-icons/fa";
 
 export default function Dashboard() {
   const { waste, loading, error, confirmWaste } = useWaste();
@@ -21,48 +23,69 @@ export default function Dashboard() {
     (filterStatus === "All" || w.status === filterStatus)
   );
 
+  // Icon for waste type
+  const getTypeIcon = (type) => {
+    if (/biohazard/i.test(type)) return <FaBiohazard className="waste-type-icon" style={{color:'#eab308'}} />;
+    if (/syringe|needle/i.test(type)) return <FaSyringe className="waste-type-icon" style={{color:'#f87171'}} />;
+    if (/chemical|lab/i.test(type)) return <FaFlask className="waste-type-icon" style={{color:'#38bdf8'}} />;
+    if (/plastic|trash|bag/i.test(type)) return <FaTrashAlt className="waste-type-icon" style={{color:'#64748b'}} />;
+    return <FaSyncAlt className="waste-type-icon" style={{color:'#2563eb'}} />;
+  };
+
+  // Badge for status
+  const getStatusBadge = (status) => {
+    if (/recycled/i.test(status)) return <span className="status-badge status-recycled"><FaCheckCircle style={{marginRight:4}}/>Recycled</span>;
+    if (/pending/i.test(status)) return <span className="status-badge status-pending"><FaHourglassHalf style={{marginRight:4}}/>Pending</span>;
+    if (/processed|disposed/i.test(status)) return <span className="status-badge status-processed"><FaSyncAlt style={{marginRight:4}}/>Processed</span>;
+    return <span className="status-badge">{status}</span>;
+  };
+
   return (
-    <div className="card">
-      <h3>
-        <span role="img" aria-label="dashboard">📊</span> Dashboard
-      </h3>
-      <div style={{ display: "flex", gap: 18, marginBottom: 18 }}>
+    <div className="card dashboard-card fade-in-card">
+      <h3><FaTachometerAlt style={{color:'#2563eb'}}/> Dashboard</h3>
+      <div className="dashboard-filters">
         <div>
-          <label style={{ fontWeight: 600, marginRight: 6 }}>Type:</label>
-          <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ padding: "4px 10px", borderRadius: 6 }}>
+          <label>Type:</label>
+          <select value={filterType} onChange={e => setFilterType(e.target.value)}>
             {wasteTypes.map(type => (
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
         </div>
         <div>
-          <label style={{ fontWeight: 600, marginRight: 6 }}>Status:</label>
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{ padding: "4px 10px", borderRadius: 6 }}>
+          <label>Status:</label>
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             {wasteStatuses.map(status => (
               <option key={status} value={status}>{status}</option>
             ))}
           </select>
         </div>
       </div>
-      {loading && <p>Loading...</p>}
+      {loading && <div className="spinner"></div>}
       {error && <p className="error">{error}</p>}
       {!loading && !error && filteredWaste.length === 0 && <p>No waste items found.</p>}
-      {!loading && !error && filteredWaste.map((d) => (
-        <div key={d.id} className={`item status-${d.status.toLowerCase()}`}
-          style={{ marginBottom: 16, boxShadow: "0 1px 4px rgba(37,99,235,0.06)", borderRadius: 12, padding: "16px 12px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontWeight: 600, fontSize: "1.1rem" }}>{d.type}</span>
-            <span className={`status-badge status-${d.status.toLowerCase()}`}>{d.status}</span>
+      <div className="dashboard-list">
+        {!loading && !error && filteredWaste.map((d) => (
+          <div key={d.id} className={`dashboard-item-card status-${d.status.toLowerCase()} fade-in-card`}
+            tabIndex={0}
+            style={{ marginBottom: 18 }}>
+            <div className="dashboard-item-header">
+              {getTypeIcon(d.type)}
+              <span className="dashboard-item-type">{d.type}</span>
+              {getStatusBadge(d.status)}
+            </div>
+            <div className="dashboard-item-details">
+              <div><b>Disposal Section:</b> {d.section}</div>
+              <div><b>Uploaded:</b> {new Date(d.time).toLocaleString()}</div>
+            </div>
+            {d.status === "Pending" && (
+              <button onClick={() => handleConfirm(d.id)} disabled={confirming === d.id} className="dashboard-confirm-btn">
+                {confirming === d.id ? "Confirming..." : "Confirm Disposal"}
+              </button>
+            )}
           </div>
-          <p style={{ margin: "6px 0 0 0", fontSize: ".97rem" }}><b>Disposal Section:</b> {d.section}</p>
-          <p style={{ margin: "2px 0 0 0", fontSize: ".97rem" }}><b>Uploaded:</b> {new Date(d.time).toLocaleString()}</p>
-          {d.status === "Pending" && (
-            <button onClick={() => handleConfirm(d.id)} disabled={confirming === d.id} style={{ marginTop: 10, borderRadius: 6, background: "#2563eb", color: "#fff", padding: "8px 18px", fontWeight: 600, border: "none", boxShadow: "0 1px 4px rgba(37,99,235,0.10)" }}>
-              {confirming === d.id ? "Confirming..." : "Confirm Disposal"}
-            </button>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
-}
+// ...existing code...

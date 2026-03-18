@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaLeaf, FaCheckCircle } from "react-icons/fa";
 
-export default function Sustainability() {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,18 +23,36 @@ export default function Sustainability() {
   }, []);
 
   return (
-    <div className="card sustainability-card">
-      <h3>🌱 Sustainability Dashboard</h3>
-      {loading && <p>Loading...</p>}
+    <div className="card sustainability-card fade-in-card">
+      <h3><FaLeaf style={{color:'#22c55e'}}/> Sustainability</h3>
+      {loading && <div className="spinner"></div>}
       {error && <p className="error">{error}</p>}
       {metrics && (
         <>
-          <p><b>Total Waste Processed:</b> {metrics.total}</p>
-          <p><b>Recycled:</b> {metrics.percentRecycled}%</p>
-          <p><b>Disposed:</b> {metrics.disposed}</p>
-          <p><b>CO₂ Saved:</b> {metrics.co2Saved} kg</p>
-          <p><b>Plastic Recycled:</b> {metrics.plasticRecycled} kg</p>
-          <div className="eco-message">This hospital follows eco-friendly waste management practices 🌍</div>
+          <div className="sustainability-metric-row">
+            <span>Total Waste Processed</span>
+            <span className="sustainability-metric-value">{metrics.total}</span>
+          </div>
+          <div className="sustainability-metric-row">
+            <span>Recycled</span>
+            <span className="sustainability-metric-value">{metrics.percentRecycled}%</span>
+          </div>
+          <div className="sustainability-progress-bar">
+            <div style={{width: metrics.percentRecycled + '%'}}/>
+          </div>
+          <div className="sustainability-metric-row">
+            <span>Disposed</span>
+            <span className="sustainability-metric-value">{metrics.disposed}</span>
+          </div>
+          <div className="sustainability-metric-row">
+            <span>CO₂ Saved</span>
+            <span className="sustainability-metric-value">{metrics.co2Saved} kg</span>
+          </div>
+          <div className="sustainability-metric-row">
+            <span>Plastic Recycled</span>
+            <span className="sustainability-metric-value">{metrics.plasticRecycled} kg</span>
+          </div>
+          <div className="eco-message eco-badge"><FaCheckCircle style={{color:'#22c55e',marginRight:6}}/>Eco-friendly Hospital</div>
         </>
       )}
     </div>

@@ -1,5 +1,7 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaShieldAlt, FaCheckCircle, FaExclamationTriangle, FaDownload } from "react-icons/fa";
 
 function exportAuditToCSV(auditLog) {
   const header = ["Action", "Type", "Time", "Waste ID"];
@@ -16,7 +18,7 @@ function exportAuditToCSV(auditLog) {
   URL.revokeObjectURL(url);
 }
 
-export default function CompliancePanel() {
+function CompliancePanel() {
   const [compliance, setCompliance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,18 +39,25 @@ export default function CompliancePanel() {
   }, []);
 
   return (
-    <div className="card compliance-card">
-      <h3>🏥 Hospital Compliance Panel</h3>
-      {loading && <p>Loading...</p>}
+    <div className="card compliance-card fade-in-card">
+      <h3><FaShieldAlt style={{color:'#22c55e'}}/> Compliance Panel</h3>
+      {loading && <div className="spinner"></div>}
       {error && <p className="error">{error}</p>}
       {compliance && (
         <>
-          <p style={{fontWeight:600}}>
-            <b>Status:</b> {compliance.status === "Compliant" ? <span style={{color: 'green'}}>✅ Compliant</span> : <span style={{color: 'orange'}}>⚠️ Warning</span>}
-          </p>
-          <div>
-            <b>Audit Log:</b>
-            <table className="audit-table">
+          <div className="compliance-status-row">
+            <b>Status:</b>
+            {compliance.status === "Compliant"
+              ? <span className="status-badge status-recycled"><FaCheckCircle style={{marginRight:4}}/>Compliant</span>
+              : <span className="status-badge status-pending"><FaExclamationTriangle style={{marginRight:4}}/>Warning</span>
+            }
+          </div>
+          <div className="compliance-table-wrap">
+            <div className="compliance-table-header">
+              <b>Audit Log</b>
+              <button className="report-btn" onClick={() => exportAuditToCSV(compliance.auditLog)}><FaDownload style={{marginRight:6}}/>Download</button>
+            </div>
+            <table className="audit-table compliance-table">
               <thead>
                 <tr>
                   <th>Action</th>
@@ -58,10 +67,10 @@ export default function CompliancePanel() {
                 </tr>
               </thead>
               <tbody>
-                {compliance.auditLog.length === 0 && (
+                {Array.isArray(compliance.auditLog) && compliance.auditLog.length === 0 && (
                   <tr><td colSpan={4}>No audit records.</td></tr>
                 )}
-                {compliance.auditLog.map((log, idx) => (
+                {Array.isArray(compliance.auditLog) && compliance.auditLog.map((log, idx) => (
                   <tr key={idx}>
                     <td>{log.action}</td>
                     <td>{log.type}</td>
@@ -80,3 +89,5 @@ export default function CompliancePanel() {
     </div>
   );
 }
+
+export default CompliancePanel;

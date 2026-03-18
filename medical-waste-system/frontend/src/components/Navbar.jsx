@@ -1,26 +1,15 @@
 import React from "react";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Navbar() {
   return (
-    <nav className="navbar-pro">
-      <div className="nav-left">
-        <span className="nav-logo">🏥</span>
-        <span className="nav-title">Nova Specialist Hospital</span>
+    <header className="navbar-topbar">
+      <div className="navbar-title-area">
+        <span className="navbar-title">AI Healthcare Waste Management</span>
       </div>
-      <div className="nav-menu">
-        <a href="#dashboard">Dashboard</a>
-        <a href="#recycling">Recycling</a>
-        <a href="#sustainability">Sustainability</a>
-        <a href="#compliance">Compliance</a>
-        <div className="nav-dropdown">
-          <span>More ▼</span>
-          <div className="dropdown-content">
-            <a href="#history">History</a>
-            <a href="#upload">Upload Waste</a>
-          </div>
-        </div>
+      <div className="navbar-profile">
+        <FaUserCircle size={32} className="navbar-profile-icon" />
       </div>
-      <button className="nav-cta">Book Appointment</button>
-    </nav>
+    </header>
   );
 }
